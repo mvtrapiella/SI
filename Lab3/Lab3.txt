@@ -1,0 +1,80 @@
+=================================
+============ LAB 3 ==============
+=================================
+- Clase Problema: clase abstracta que define un problema genérico
+
+- Clase Node: define el estado. Tiene los siguientes parametros:
+	- state: estado del nodo
+	- parent: nodo padre del actual
+	- action: accion a realizar por el nodo
+	- path_cost: coste hasta el momento 
+
+	- failure = Node('failure', path_cost=math.inf) -> cuando no hay solución se nos devuelve este nodo
+
+- Función expand de un nodo: es lo que nos permite recorrer el grafo (expande los hijos de un nodo)
+
+- Frontier: estructura de datos que contiene los nodos que podemos expandir.
+Esta estructura de datos va a tener una prioridad definida por una función de evaluación f.
+
+- Método add del Frontier: recibe un nodo. Añade al Frontier segun la key del nodo (item), que es 
+el valor de f, un contador(usado para el desempate de f) y el nodo(item a añadir)
+
+- BFS (Best First Search): recibe el problema y la funcion de evaluación f.
+Se saca el nodo incial del problema.
+Se crea el frontier, que en este caso será una PriorityQueue ordenada por f.
+Se crea una estructura de datos llamada reached para evitar visitar nodos ya visitados (así evitamos loops infinitos)
+Se itera mientras que queden nodos en el frontier. Si no quedan nodos en el frontier y no hemos llegado a una solución, no hay solución (se devuelve failure).
+Se hace pop del frontier y se comprueba si este nodo es solución.
+Si es solucion se devuelve el nodo.
+Si no es solución, se expanden sus hijos. Esto se repite hasta que encontremos una solución o hasta que no queden nodos en el Frontier.
+
+- BFTS (Best First Tree Search): recibe el problema y la funcion de evaluación f.
+Muy similar a BFS pero aqui no usamos la estructura reached, y tenemos una funcion: is_cycle para controlar los ciclos en una rama.
+
+- g(): funcion de costo
+
+- UCS (Uniform cost search): basicamente Dikstra.
+Internamente es un BFS donde f es g.
+
+- BFS(Breath First Search): recorre un grafo por niveles.
+Internamente es un BFS donde f es la len (funcion recursiva que calcula la profundidad del nodo)
+
+=== 8-puzzle ===
+- Clase EightPuzzle: recibe un problema
+	- constructor: recibe el estado incial y el goal.
+	Hace una comprobación para ver si el problema tiene solución comprobando las paridades de las inversiones
+	- actions: define las tupas de posibles movimientos: ((1, 3)(derecha o abajo), (0, 2, 4)(izquierda, derecha, abajo)...)
+	Busca en la lista state en que posicion se encuentra el 0 (casilla vacia) y devuelva la tupla de moves de posibles movimientos.
+
+=== TSP ===	
+- Clase EstadoTSP: estado del problema
+	- constructor: ciudad en la que estoy, lista de ciudades visitadas
+	- hash: para que pueda ser clave de un diccionario, necesita una función hash
+	
+- Clase Grafo: grafo de conexiones entre las ciudades. Nos da el número de ciuades y las conexiones entre ellas
+	- constructor: recibe una lista de valores que contiene la lista de valores de la matriz diagonal inferior
+	
+- SymmetricTSP: recibe el problema
+	- conexiones: recibe un estado incial
+	- actions: primer comprueba si estamos en la ciudad inicial (-1). En tal caso devuelve una lista vacia (ya hemos completado el problema)
+	Si no, devuelve las ciudades no visitadas. Si no hay mas ciudades sin visitar devuelve [-1] -> no solución
+	- result: recibe un estado y una action. Añadimos a visitadas las que ya hemos visitado y le añadimos la ciudad actual. Devuelve el EstadoTSP con la action que le hemos pasado
+	- is_goal: comprueba si un estado es solución
+	- action_cost: devuelve el costo de ir de una ciudad a otra
+	
+Para este problema BFS no es óptimo. Va a generar un árbol balanceado que representa casi todo el espacio muestral (va a tardar mucho tiempo).
+DFS va a tardar menos. Va a generar un árbol degenerado, por lo que explorará mucho unas ramas (explorará menos nodos que BFS). Tampoco genera una solución óptima.
+UCS es el único que genera una solución óptima.
+
+=== N-Reinas ===
+- Clase NQueensProblem: recibe un problema
+	- constructor: recibe el tamaño del tablero.
+	Intial es una tupla con N estados [None]
+	- actions: primero comprueba que la última tupla en state no sea None, en tal caso esta resuelto.
+	Si no, se busca la primera fila sin dama, y se intera por todas las casillas de la fila y se comprueba que no haya ningun conflicto
+	- result: recibe el estado y la fila. Saca la columna siendo esta la primera posicion de las tuplas en las que siga habiendo un None.
+	Hace una lista con el estado (basicamente con todas las tuplas que ya tenemos). Y cambia la tupla en posicion col por row. 
+	Devuelve la tupla con el nuevo cambio de cambiar new[col] por row
+	- conflicted: mira por conflictos entre las damas
+	- is_goal: si la última tupla no es None es una solución.
+	

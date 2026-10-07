@@ -1,0 +1,6 @@
+=================================
+============ LAB 4 ==============
+=================================
+
+Condición suficiente de expansión (h monótono) -> g*(n) + h(n) < C*
+Todos los nodos n dentro de esta zona, serán expandidos
